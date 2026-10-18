@@ -42,3 +42,16 @@ jobs:
             Select-Object HypervisorPresent,Model,Manufacturer
 
           Get-Command Get-VMHost -ErrorAction SilentlyContinue
+
+      - name: Comprobar DirectX y adaptadores
+        shell: pwsh
+        run: |
+          Get-CimInstance Win32_VideoController |
+            Format-List Name,VideoProcessor,AdapterCompatibility,AdapterRAM,DriverVersion
+
+          $dx = "$env:TEMP\dxdiag.txt"
+          Start-Process dxdiag.exe -ArgumentList "/whql:off /t `"$dx`"" -Wait
+
+          if (Test-Path $dx) {
+            Select-String -Path $dx -Pattern "Card name","Feature Levels","Direct3D Acceleration"
+          }
