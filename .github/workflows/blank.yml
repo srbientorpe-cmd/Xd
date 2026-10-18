@@ -31,3 +31,14 @@ jobs:
         shell: pwsh
         run: |
           Get-Command dxdiag -ErrorAction SilentlyContinue
+
+      - name: Analizar aceleracion grafica
+        shell: pwsh
+        run: |
+          Get-CimInstance Win32_VideoController |
+            Format-List Name,VideoProcessor,AdapterRAM,DriverVersion,PNPDeviceID
+
+          Get-CimInstance Win32_ComputerSystem |
+            Select-Object HypervisorPresent,Model,Manufacturer
+
+          Get-Command Get-VMHost -ErrorAction SilentlyContinue
