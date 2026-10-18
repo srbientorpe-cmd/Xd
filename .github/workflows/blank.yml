@@ -1,0 +1,33 @@
+
+name: Comprobar hardware disponible
+
+on:
+  workflow_dispatch:
+
+jobs:
+  hardware:
+    runs-on: windows-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Revisar CPU y memoria
+        shell: pwsh
+        run: |
+          Get-CimInstance Win32_Processor |
+            Select-Object Name, NumberOfCores
+
+          Get-CimInstance Win32_OperatingSystem |
+            Select-Object TotalVisibleMemorySize,
+                          FreePhysicalMemory
+
+      - name: Comprobar GPU
+        shell: pwsh
+        run: |
+          Get-CimInstance Win32_VideoController |
+            Select-Object Name, DriverVersion,
+                          AdapterRAM
+
+      - name: Revisar DirectX
+        shell: pwsh
+        run: |
+          Get-Command dxdiag -ErrorAction SilentlyContinue
